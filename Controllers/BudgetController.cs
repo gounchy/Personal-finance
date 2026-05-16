@@ -59,8 +59,9 @@ namespace CNPM_Nhom12.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Create(BudgetLimit budget)
         {
-            ModelState.Remove("UserId");      
-            ModelState.Remove("Category");    
+            ModelState.Remove("UserId");
+            ModelState.Remove("Category");
+
             if (!ModelState.IsValid)
             {
                 ViewBag.Categories = _db.Categories
@@ -82,12 +83,21 @@ namespace CNPM_Nhom12.Controllers
                 return View(budget);
             }
 
-            budget.UserId = UserId;
-            _db.BudgetLimits.Add(budget);
-            _db.SaveChanges();
-
-            TempData["Success"] = "Đã thiết lập hạn mức!";
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                budget.UserId = UserId;
+                _db.BudgetLimits.Add(budget);
+                _db.SaveChanges();
+                TempData["Success"] = "Đã thiết lập hạn mức!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra, vui lòng thử lại.");
+                ViewBag.Categories = _db.Categories
+                    .Where(c => c.Type == TransactionType.Expense).ToList();
+                return View(budget);
+            }
         }
 
         public IActionResult Edit(int id)
@@ -104,8 +114,9 @@ namespace CNPM_Nhom12.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Edit(int id, BudgetLimit budget)
         {
-            ModelState.Remove("UserId");     
-            ModelState.Remove("Category");   
+            ModelState.Remove("UserId");
+            ModelState.Remove("Category");
+
             if (!ModelState.IsValid)
             {
                 ViewBag.Categories = _db.Categories
@@ -113,30 +124,47 @@ namespace CNPM_Nhom12.Controllers
                 return View(budget);
             }
 
-            var existing = _db.BudgetLimits.FirstOrDefault(x => x.Id == id && x.UserId == UserId);
-            if (existing == null) return NotFound();
+            try
+            {
+                var existing = _db.BudgetLimits.FirstOrDefault(x => x.Id == id && x.UserId == UserId);
+                if (existing == null) return NotFound();
 
-            existing.CategoryId = budget.CategoryId;
-            existing.LimitAmount = budget.LimitAmount;
-            existing.Month = budget.Month;
-            existing.Year = budget.Year;
+                existing.CategoryId = budget.CategoryId;
+                existing.LimitAmount = budget.LimitAmount;
+                existing.Month = budget.Month;
+                existing.Year = budget.Year;
 
-            _db.SaveChanges();
-            TempData["Success"] = "Đã cập nhật hạn mức!";
-            return RedirectToAction(nameof(Index));
+                _db.SaveChanges();
+                TempData["Success"] = "Đã cập nhật hạn mức!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra, vui lòng thử lại.");
+                ViewBag.Categories = _db.Categories
+                    .Where(c => c.Type == TransactionType.Expense).ToList();
+                return View(budget);
+            }
         }
 
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
-            var b = _db.BudgetLimits.FirstOrDefault(x => x.Id == id && x.UserId == UserId);
-            if (b != null)
+            try
             {
-                _db.BudgetLimits.Remove(b);
-                _db.SaveChanges();
+                var b = _db.BudgetLimits.FirstOrDefault(x => x.Id == id && x.UserId == UserId);
+                if (b != null)
+                {
+                    _db.BudgetLimits.Remove(b);
+                    _db.SaveChanges();
+                    TempData["Success"] = "Đã xóa hạn mức.";
+                }
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Có lỗi xảy ra khi xóa, vui lòng thử lại.";
             }
 
-            TempData["Success"] = "Đã xóa hạn mức.";
             return RedirectToAction(nameof(Index));
         }
     }

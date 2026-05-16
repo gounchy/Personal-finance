@@ -21,7 +21,6 @@ namespace CNPM_Nhom12.Controllers
                                    int? month = null, int? year = null,
                                    int? categoryId = null, string? type = null)
         {
-            // Parse monthYear dạng "2026-5"
             if (!string.IsNullOrWhiteSpace(monthYear))
             {
                 var i = monthYear.IndexOf('-', StringComparison.Ordinal);
@@ -90,11 +89,19 @@ namespace CNPM_Nhom12.Controllers
                 return View(vm);
             }
 
-            _db.Transactions.Add(vm.Transaction);
-            _db.SaveChanges();
-
-            TempData["Success"] = "Thêm giao dịch thành công!";
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                _db.Transactions.Add(vm.Transaction);
+                _db.SaveChanges();
+                TempData["Success"] = "Thêm giao dịch thành công!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra, vui lòng thử lại.");
+                vm.Categories = _db.Categories.ToList();
+                return View(vm);
+            }
         }
 
         public IActionResult Edit(int id)
@@ -108,6 +115,7 @@ namespace CNPM_Nhom12.Controllers
                 Categories = _db.Categories.ToList()
             });
         }
+
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Edit(int id, TransactionFormViewModel vm)
         {
@@ -121,32 +129,48 @@ namespace CNPM_Nhom12.Controllers
                 return View(vm);
             }
 
-            var existing = _db.Transactions.FirstOrDefault(t => t.Id == id && t.UserId == UserId);
-            if (existing == null) return NotFound();
+            try
+            {
+                var existing = _db.Transactions.FirstOrDefault(t => t.Id == id && t.UserId == UserId);
+                if (existing == null) return NotFound();
 
-            existing.Description = vm.Transaction.Description;
-            existing.Note = vm.Transaction.Note;
-            existing.Amount = vm.Transaction.Amount;
-            existing.Date = vm.Transaction.Date;
-            existing.Type = vm.Transaction.Type;
-            existing.CategoryId = vm.Transaction.CategoryId;
+                existing.Description = vm.Transaction.Description;
+                existing.Note = vm.Transaction.Note;
+                existing.Amount = vm.Transaction.Amount;
+                existing.Date = vm.Transaction.Date;
+                existing.Type = vm.Transaction.Type;
+                existing.CategoryId = vm.Transaction.CategoryId;
 
-            _db.SaveChanges();
-            TempData["Success"] = "Cập nhật giao dịch thành công!";
-            return RedirectToAction(nameof(Index));
+                _db.SaveChanges();
+                TempData["Success"] = "Cập nhật giao dịch thành công!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra, vui lòng thử lại.");
+                vm.Categories = _db.Categories.ToList();
+                return View(vm);
+            }
         }
 
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Delete(int id)
         {
-            var tx = _db.Transactions.FirstOrDefault(t => t.Id == id && t.UserId == UserId);
-            if (tx != null)
+            try
             {
-                _db.Transactions.Remove(tx);
-                _db.SaveChanges();
+                var tx = _db.Transactions.FirstOrDefault(t => t.Id == id && t.UserId == UserId);
+                if (tx != null)
+                {
+                    _db.Transactions.Remove(tx);
+                    _db.SaveChanges();
+                    TempData["Success"] = "Đã xóa giao dịch.";
+                }
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Có lỗi xảy ra khi xóa, vui lòng thử lại.";
             }
 
-            TempData["Success"] = "Đã xóa giao dịch.";
             return RedirectToAction(nameof(Index));
         }
     }
