@@ -46,9 +46,3 @@ Mở file `appsettings.json`, đảm bảo connection string trỏ đúng SQL Se
 Mở solution `CNPM_Nhom12.sln` bằng Visual Studio, nhấn **F5** hoặc nút **Run**.
 
 ---
-
-## 👥 Thành viên nhóm 12
-
-| Họ tên | MSSV |
-|---|---|
-| Nguyễn Huy | 1923050808 |
