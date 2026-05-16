@@ -17,7 +17,7 @@
 ### Bước 1: Clone repo
 
 ```bash
-git clone https://github.com/gounchy/Personal-finance.git
+https://github.com/gounchy/Personal-finance.git
 ```
 
 ### Bước 2: Restore database
