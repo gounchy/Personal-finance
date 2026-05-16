@@ -1,0 +1,102 @@
+﻿@using CNPM_Nhom12.ViewModels
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Tổng quan";
+}
+
+@section TopbarActions {
+    <a class="btn-primary" asp-controller="Transactions" asp-action="Create">
+        <i class="ti ti-plus"></i> Thêm giao dịch
+    </a>
+}
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-label"><i class="ti ti-arrow-down-circle" style="color:var(--green)"></i> Tổng thu</div>
+        <div class="stat-value" style="color:var(--green-dk)">@Model.TotalIncome.ToString("N0")đ</div>
+        <div class="stat-sub">↑ +@Model.IncomeChangePercent% so với tháng trước</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label"><i class="ti ti-arrow-up-circle" style="color:var(--red)"></i> Tổng chi</div>
+        <div class="stat-value" style="color:var(--red-dk)">@Model.TotalExpense.ToString("N0")đ</div>
+        <div class="stat-sub">↓ @Model.ExpenseChangePercent% so với tháng trước</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label"><i class="ti ti-scale" style="color:var(--blue)"></i> Số dư</div>
+        <div class="stat-value" style="color:var(--blue-dk)">@Model.Balance.ToString("N0")đ</div>
+        <div class="stat-sub">Tháng @Model.Month/@Model.Year</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label"><i class="ti ti-receipt"></i> Giao dịch</div>
+        <div class="stat-value">@Model.TransactionCount</div>
+        <div class="stat-sub">Tháng này</div>
+    </div>
+</div>
+
+@if (Model.WarningBudgets.Any())
+{
+    <div class="alert-box">
+        <i class="ti ti-alert-triangle"></i>
+        <div>
+            @foreach (var b in Model.WarningBudgets)
+            {
+                <span>
+                    Danh mục <strong>@b.Category?.Name</strong>
+                    @(b.Percentage > 100
+                                ? $"đã vượt {b.Percentage:F0}% hạn mức."
+                                : $"đã đạt {b.Percentage:F0}% — còn {b.RemainingAmount:N0}đ.")
+        </span>
+        <text>&nbsp;</text>
+                }
+        </div>
+    </div>
+}
+
+<div class="two-col">
+    <div class="card">
+        <div class="card-title">
+            Giao dịch gần đây
+            <a class="card-link" asp-controller="Transactions" asp-action="Index">Xem tất cả →</a>
+        </div>
+        @foreach (var tx in Model.RecentTransactions)
+        {
+            <div class="tx-item">
+                <div class="tx-icon" style="background:@tx.Category?.BgColor">
+                    <i class="@tx.Category?.Icon" style="color:@tx.Category?.Color"></i>
+                </div>
+                <div class="tx-body">
+                    <div class="tx-name">@tx.Description</div>
+                    <div class="tx-meta">@tx.Category?.Name · @tx.Date.ToString("dd/MM/yyyy")</div>
+                </div>
+                <div class="tx-amount @(tx.Type == TransactionType.Income ? "positive" : "negative")">
+                    @(tx.Type == TransactionType.Income ? "+" : "−")@tx.Amount.ToString("N0")đ
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            Hạn mức tháng @Model.Month
+            <a class="card-link" asp-controller="Budget" asp-action="Index">Chi tiết →</a>
+        </div>
+        @foreach (var b in Model.BudgetLimits)
+        {
+            var pct = Math.Min(b.Percentage, 100);
+            var barColor = b.Percentage > 100 ? "var(--red)" : b.Percentage >= 80 ? "var(--amber)" : "var(--green)";
+            var txtColor = b.Percentage > 100 ? "var(--red-dk)" : b.Percentage >= 80 ? "var(--amber-dk)" : "var(--green-dk)";
+            <div class="budget-bar-wrap">
+                <div class="budget-bar-top">
+                    <span>@b.Category?.Name</span>
+                    <span style="color:@txtColor;font-weight:500">
+                        @b.Percentage.ToString("F0")%
+                        @(b.Percentage > 100 ? "— Vượt mức!" : $"— {b.SpentAmount:N0} / {b.LimitAmount:N0}đ")
+                    </span>
+                </div>
+                <div class="budget-bar-bg">
+                    <div class="budget-bar-fill" style="width:@(pct)%;background:@barColor"></div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

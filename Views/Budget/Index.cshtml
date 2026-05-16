@@ -1,0 +1,84 @@
+﻿@model List<BudgetLimit>
+@{
+    ViewData["Title"] = "Hạn mức chi tiêu";
+    var totalLimit = Model.Sum(b => b.LimitAmount);
+    var totalSpent = Model.Sum(b => b.SpentAmount);
+    var warningCount = Model.Count(b => b.Percentage >= 80);
+}
+
+@section TopbarActions {
+    <a class="btn-primary" asp-action="Create"><i class="ti ti-plus"></i> Thêm hạn mức</a>
+}
+
+<div class="budget-stat-grid" style="margin-bottom:20px">
+    <div class="stat-card">
+        <div class="stat-label">Tổng hạn mức</div>
+        <div class="stat-value">@totalLimit.ToString("N0")đ</div>
+    </div>
+    <div class="stat-card" style="background:var(--green-bg)">
+        <div class="stat-label" style="color:var(--green-dk)">Đã chi</div>
+        <div class="stat-value" style="color:var(--green-dk)">@totalSpent.ToString("N0")đ</div>
+    </div>
+    <div class="stat-card" style="background:var(--blue-bg)">
+        <div class="stat-label" style="color:var(--blue-dk)">Còn lại</div>
+        <div class="stat-value" style="color:var(--blue-dk)">@((totalLimit - totalSpent).ToString("N0"))đ</div>
+    </div>
+    <div class="stat-card" style="background:var(--amber-bg)">
+        <div class="stat-label" style="color:var(--amber-dk)">Cảnh báo</div>
+        <div class="stat-value" style="color:var(--amber-dk)">@warningCount danh mục</div>
+    </div>
+</div>
+
+@{
+    var overBudget = Model.Where(b => b.Percentage > 100).ToList();
+}
+@if (overBudget.Any())
+{
+    <div class="alert-box">
+        <i class="ti ti-bell-ringing"></i>
+        <div>
+            @foreach (var b in overBudget)
+            {
+                <span><strong>@b.Category?.Name</strong> đã vượt @b.Percentage.ToString("F0")% hạn mức.&nbsp;</span>
+            }
+        </div>
+    </div>
+}
+
+<div class="budget-cards">
+    @foreach (var b in Model)
+    {
+        var pct = Math.Min(b.Percentage, 100);
+        var barColor = b.Percentage > 100 ? "var(--red)" : b.Percentage >= 80 ? "var(--amber)" : "var(--green)";
+        var pctColor = b.Percentage > 100 ? "var(--red-dk)" : b.Percentage >= 80 ? "var(--amber-dk)" : "var(--green-dk)";
+        <div class="budget-card">
+            <div class="budget-card-header">
+                <div class="budget-card-title">
+                    <div style="width:32px;height:32px;border-radius:9px;background:@b.Category?.BgColor;display:flex;align-items:center;justify-content:center">
+                        <i class="@b.Category?.Icon" style="color:@b.Category?.Color;font-size:16px"></i>
+                    </div>
+                    @b.Category?.Name
+                </div>
+                <span class="badge badge-@b.StatusBadge">@b.StatusLabel</span>
+            </div>
+            <div class="budget-pct" style="color:@pctColor">@b.Percentage.ToString("F0")%</div>
+            <div class="budget-bar-bg" style="height:9px;margin-bottom:9px">
+                <div class="budget-bar-fill" style="width:@(pct)%;background:@barColor"></div>
+            </div>
+            <div class="budget-detail">
+                Đã chi @b.SpentAmount.ToString("N0")đ / @b.LimitAmount.ToString("N0")đ ·
+                @(b.RemainingAmount >= 0 ? $"Còn {b.RemainingAmount:N0}đ" : $"Vượt {(-b.RemainingAmount):N0}đ")
+            </div>
+            <div style="margin-top:14px">
+                <a class="btn-secondary" asp-action="Edit" asp-route-id="@b.Id"
+                   style="font-size:12px;padding:6px 12px">
+                    <i class="ti ti-edit"></i> Chỉnh hạn mức
+                </a>
+            </div>
+        </div>
+    }
+    <a class="budget-add" asp-action="Create">
+        <i class="ti ti-plus" style="font-size:28px"></i>
+        <div style="font-size:13px">Thêm hạn mức mới</div>
+    </a>
+</div>

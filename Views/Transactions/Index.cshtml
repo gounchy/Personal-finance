@@ -1,0 +1,127 @@
+﻿@using CNPM_Nhom12.ViewModels
+@model TransactionViewModel
+@{
+    ViewData["Title"] = "Giao dịch";
+    string? monthYearValue = Model.FilterYear.HasValue && Model.FilterMonth.HasValue
+        ? $"{Model.FilterYear}-{Model.FilterMonth:D2}"
+        : null;
+}
+
+@section TopbarActions {
+    <a class="btn-primary" asp-action="Create">
+        <i class="ti ti-plus"></i> Thêm giao dịch
+    </a>
+}
+
+<form method="get" class="filter-bar">
+    <input type="month" name="monthYear"
+           value="@(Model.FilterYear.HasValue ? $"{Model.FilterYear}-{Model.FilterMonth:D2}" : "")"
+           onchange="this.form.submit()">
+    <select name="type" onchange="this.form.submit()">
+        <option value="">Tất cả loại</option>
+        @if (Model.FilterType == "income")
+        {
+            <option value="income" selected>Thu nhập</option>
+        }
+        else
+        {
+            <option value="income">Thu nhập</option>
+        }
+        @if (Model.FilterType == "expense")
+        {
+            <option value="expense" selected>Chi tiêu</option>
+        }
+        else
+        {
+            <option value="expense">Chi tiêu</option>
+        }
+    </select>
+    <select name="categoryId" onchange="this.form.submit()">
+        <option value="">Tất cả danh mục</option>
+        @foreach (var cat in Model.Categories)
+        {
+            if (Model.FilterCategoryId == cat.Id)
+            {
+                <option value="@cat.Id" selected>@cat.Name</option>
+            }
+            else
+            {
+                <option value="@cat.Id">@cat.Name</option>
+            }
+        }
+    </select>
+    <div style="flex:1"></div>
+    <span style="font-size:12px;color:var(--text3)">@Model.TotalCount giao dịch</span>
+</form>
+
+<div class="card" style="padding:0;overflow:hidden">
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:28%">Mô tả</th>
+                    <th style="width:16%">Danh mục</th>
+                    <th style="width:14%">Ngày</th>
+                    <th style="width:17%">Số tiền</th>
+                    <th style="width:12%">Loại</th>
+                    <th style="width:13%">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tx in Model.Transactions)
+                {
+                    <tr>
+                        <td>
+                            <div style="font-weight:500">@tx.Description</div>
+                            @if (!string.IsNullOrEmpty(tx.Note))
+                            {
+                                <div style="font-size:11px;color:var(--text3)">@tx.Note</div>
+                            }
+                        </td>
+                        <td><span class="cat-dot" style="background:@tx.Category?.Color"></span>@tx.Category?.Name</td>
+                        <td>@tx.Date.ToString("dd/MM/yyyy")</td>
+                        <td class="@(tx.Type == TransactionType.Income ? "positive" : "negative")" style="font-weight:600">
+                            @(tx.Type == TransactionType.Income ? "+" : "−")@tx.Amount.ToString("N0")đ
+                        </td>
+                        <td>
+                            <span class="badge badge-@(tx.Type == TransactionType.Income ? "success" : "danger")">
+                                @(tx.Type == TransactionType.Income ? "Thu" : "Chi")
+                            </span>
+                        </td>
+                        <td>
+                            <a class="icon-btn" asp-action="Edit" asp-route-id="@tx.Id" title="Sửa">
+                                <i class="ti ti-edit"></i>
+                            </a>
+                            <form asp-action="Delete" asp-route-id="@tx.Id" method="post" style="display:inline"
+                                  onsubmit="return confirm('Xác nhận xóa?')">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="icon-btn" title="Xóa"><i class="ti ti-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <div class="pagination">
+        @if (Model.Page > 1)
+        {
+            <a class="page-btn" asp-action="Index" asp-route-page="@(Model.Page - 1)"
+               asp-route-monthYear="@monthYearValue" asp-route-type="@Model.FilterType" asp-route-categoryId="@Model.FilterCategoryId">‹</a>
+        }
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <a class="page-btn @(i == Model.Page ? "active" : "")" asp-action="Index" asp-route-page="@i"
+               asp-route-monthYear="@monthYearValue" asp-route-type="@Model.FilterType" asp-route-categoryId="@Model.FilterCategoryId">@i</a>
+        }
+        @if (Model.Page < Model.TotalPages)
+        {
+            <a class="page-btn" asp-action="Index" asp-route-page="@(Model.Page + 1)"
+               asp-route-monthYear="@monthYearValue" asp-route-type="@Model.FilterType" asp-route-categoryId="@Model.FilterCategoryId">›</a>
+        }
+    </div>
+}

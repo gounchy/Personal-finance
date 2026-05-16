@@ -1,0 +1,55 @@
+﻿@using CNPM_Nhom12.Models
+@model BudgetLimit
+@{
+    ViewData["Title"] = "Thêm hạn mức";
+    var categories = ViewBag.Categories as List<CNPM_Nhom12.Models.Category> ?? new();
+}
+
+<div style="max-width:480px;margin:0 auto">
+    <div class="card">
+        <div class="card-title">Thiết lập hạn mức chi tiêu mới</div>
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div class="field">
+                <label class="field-label">Danh mục</label>
+                <select name="CategoryId" required>
+                    <option value="">-- Chọn danh mục --</option>
+                    @foreach (var cat in categories)
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="field">
+                <label class="field-label">Hạn mức (đ)</label>
+                <input type="number" name="LimitAmount" min="0" step="50000" placeholder="Nhập số tiền..." required>
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label class="field-label">Tháng</label>
+                    <select name="Month">
+                        @for (int m = 1; m <= 12; m++)
+                        {
+                            if (m == Model.Month)
+                            {
+                                <option value="@m" selected>Tháng @m</option>
+                            }
+                            else
+                            {
+                                <option value="@m">Tháng @m</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="field">
+                    <label class="field-label">Năm</label>
+                    <input type="number" name="Year" value="@Model.Year" min="2020" max="2030">
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
+                <a asp-action="Index" class="btn-secondary">Hủy bỏ</a>
+                <button type="submit" class="btn-primary"><i class="ti ti-check"></i> Lưu hạn mức</button>
+            </div>
+        </form>
+    </div>
+</div>

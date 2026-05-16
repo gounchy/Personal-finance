@@ -1,0 +1,68 @@
+﻿@model List<Category>
+@{
+    ViewData["Title"] = "Danh mục";
+    var expenseList = Model.Where(c => c.Type == TransactionType.Expense).ToList();
+    var incomeList = Model.Where(c => c.Type == TransactionType.Income).ToList();
+}
+
+@section TopbarActions {
+    <a class="btn-primary" asp-action="Create"><i class="ti ti-plus"></i> Thêm danh mục</a>
+}
+
+<div class="section-header">
+    <div>
+        <div class="section-title">Danh mục Chi tiêu</div>
+        <div class="section-count">@expenseList.Count danh mục</div>
+    </div>
+</div>
+<div class="cat-grid">
+    @foreach (var cat in expenseList)
+    {
+        <div class="cat-card">
+            <div class="cat-card-icon" style="background:@cat.BgColor">
+                <i class="@cat.Icon" style="color:@cat.Color;font-size:20px"></i>
+            </div>
+            <div class="cat-card-name">@cat.Name</div>
+            <div class="cat-card-type">Chi tiêu</div>
+            <div class="cat-card-actions">
+                <a class="icon-btn" asp-action="Edit" asp-route-id="@cat.Id"><i class="ti ti-edit"></i></a>
+                <form asp-action="Delete" asp-route-id="@cat.Id" method="post" style="display:inline"
+                      onsubmit="return confirm('Xóa danh mục @cat.Name?')">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="icon-btn"><i class="ti ti-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    }
+    <a class="cat-card cat-add" asp-action="Create">
+        <i class="ti ti-plus"></i>
+        <div class="cat-add-label">Thêm danh mục mới</div>
+    </a>
+</div>
+
+<div class="section-header" style="margin-top:8px">
+    <div>
+        <div class="section-title">Danh mục Thu nhập</div>
+        <div class="section-count">@incomeList.Count danh mục</div>
+    </div>
+</div>
+<div class="cat-grid">
+    @foreach (var cat in incomeList)
+    {
+        <div class="cat-card">
+            <div class="cat-card-icon" style="background:@cat.BgColor">
+                <i class="@cat.Icon" style="color:@cat.Color;font-size:20px"></i>
+            </div>
+            <div class="cat-card-name">@cat.Name</div>
+            <div class="cat-card-type">Thu nhập</div>
+            <div class="cat-card-actions">
+                <a class="icon-btn" asp-action="Edit" asp-route-id="@cat.Id"><i class="ti ti-edit"></i></a>
+                <form asp-action="Delete" asp-route-id="@cat.Id" method="post" style="display:inline"
+                      onsubmit="return confirm('Xóa danh mục @cat.Name?')">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="icon-btn"><i class="ti ti-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    }
+</div>

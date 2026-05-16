@@ -1,0 +1,65 @@
+﻿@using CNPM_Nhom12.Models
+@model Category
+@{
+    ViewData["Title"] = "Sửa danh mục";
+}
+
+<div style="max-width:480px;margin:0 auto">
+    <div class="card">
+        <div class="card-title">Chỉnh sửa danh mục</div>
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="field">
+                <label class="field-label">Tên danh mục</label>
+                <input asp-for="Name" placeholder="Ví dụ: Ăn uống, Lương..." />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Loại</label>
+                <select asp-for="Type">
+                    <option value="1">Chi tiêu</option>
+                    <option value="0">Thu nhập</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Icon</label>
+                <input asp-for="Icon" placeholder="ti ti-tag" />
+                <div style="font-size:.82rem;color:var(--text3);margin-top:4px">
+                    Tra icon tại <a href="https://tabler.io/icons" target="_blank">tabler.io/icons</a>
+                    &nbsp;·&nbsp; Preview: <i id="iconPreview" class="@Model.Icon"></i>
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label class="field-label">Màu chữ</label>
+                    <input asp-for="Color" type="color" />
+                </div>
+                <div class="field">
+                    <label class="field-label">Màu nền</label>
+                    <input asp-for="BgColor" type="color" />
+                </div>
+            </div>
+
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
+                <a asp-action="Index" class="btn-secondary">Hủy bỏ</a>
+                <button type="submit" class="btn-primary"><i class="ti ti-check"></i> Cập nhật</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const iconInput = document.querySelector('input[name="Icon"]');
+        const preview   = document.getElementById('iconPreview');
+        if (iconInput && preview) {
+            iconInput.addEventListener('input', () => {
+                preview.className = iconInput.value;
+            });
+        }
+    </script>
+}

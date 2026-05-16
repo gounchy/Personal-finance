@@ -1,0 +1,92 @@
+﻿@using CNPM_Nhom12.ViewModels
+@using CNPM_Nhom12.Models
+@model TransactionFormViewModel
+@{
+    ViewData["Title"] = "Sửa giao dịch";
+}
+
+<div style="max-width:560px;margin:0 auto">
+    <div class="card">
+        <div class="card-title">Chỉnh sửa giao dịch</div>
+
+        @* Hiện lỗi validation nếu có *@
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger py-2 mb-3" style="border-radius:8px;font-size:.9rem">
+                <div asp-validation-summary="ModelOnly"></div>
+            </div>
+        }
+
+        <form asp-action="Edit" asp-route-id="@Model.Transaction.Id" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="field">
+                <label class="field-label">Loại giao dịch</label>
+                <div class="type-toggle">
+                    <button type="button" class="type-btn" id="btn-expense" onclick="setType('expense')">
+                        <i class="ti ti-arrow-up"></i> Chi tiêu
+                    </button>
+                    <button type="button" class="type-btn" id="btn-income" onclick="setType('income')">
+                        <i class="ti ti-arrow-down"></i> Thu nhập
+                    </button>
+                </div>
+                <input type="hidden" name="Transaction.Type" id="typeInput" value="@Model.Transaction.Type" />
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label class="field-label">Số tiền (đ)</label>
+                    <input asp-for="Transaction.Amount" type="number" min="0" placeholder="Nhập số tiền...">
+                    <span asp-validation-for="Transaction.Amount" class="text-danger small"></span>
+                </div>
+                <div class="field">
+                    <label class="field-label">Ngày</label>
+                    @* Format cố định yyyy-MM-dd để tránh lỗi culture *@
+                    <input type="date" name="Transaction.Date" id="Transaction_Date"
+                           value="@Model.Transaction.Date.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="Transaction.Date" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Danh mục</label>
+                <select asp-for="Transaction.CategoryId"
+                        asp-items="@(new SelectList(Model.Categories, "Id", "Name", Model.Transaction.CategoryId))">
+                    <option value="">-- Chọn danh mục --</option>
+                </select>
+                <span asp-validation-for="Transaction.CategoryId" class="text-danger small"></span>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Mô tả</label>
+                <input asp-for="Transaction.Description" placeholder="Tên giao dịch..." />
+                <span asp-validation-for="Transaction.Description" class="text-danger small"></span>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Ghi chú (tuỳ chọn)</label>
+                <input asp-for="Transaction.Note" placeholder="Thêm ghi chú..." />
+            </div>
+
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
+                <a asp-action="Index" class="btn-secondary">Hủy bỏ</a>
+                <button type="submit" class="btn-primary"><i class="ti ti-check"></i> Cập nhật</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const currentType = '@Model.Transaction.Type' === 'Income' ? 'income' : 'expense';
+
+        function setType(t) {
+            document.getElementById('btn-expense').className = 'type-btn' + (t === 'expense' ? ' active-expense' : '');
+            document.getElementById('btn-income').className  = 'type-btn' + (t === 'income'  ? ' active-income'  : '');
+            document.getElementById('typeInput').value = t === 'income' ? 'Income' : 'Expense';
+        }
+
+        // Set trạng thái ban đầu theo giá trị model
+        setType(currentType);
+    </script>
+}

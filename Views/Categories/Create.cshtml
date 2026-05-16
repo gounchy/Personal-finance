@@ -1,0 +1,46 @@
+﻿@using CNPM_Nhom12.Models
+@model Category
+@{
+    ViewData["Title"] = "Thêm danh mục";
+}
+
+<div style="max-width:480px;margin:0 auto">
+    <div class="card">
+        <div class="card-title">Thêm danh mục mới</div>
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div class="field">
+                <label class="field-label">Tên danh mục</label>
+                <input asp-for="Name" placeholder="Ví dụ: Ăn uống, Lương..." required>
+            </div>
+            <div class="field">
+                <label class="field-label">Loại</label>
+                <select asp-for="Type">
+                    <option value="1">Chi tiêu</option>
+                    <option value="0">Thu nhập</option>
+                </select>
+            </div>
+            <div class="field">
+                <label class="field-label">Icon (Tabler Icons)</label>
+                <input asp-for="Icon" placeholder="ti ti-tag">
+                <span class="text-muted" style="font-size:.85rem">
+                    Xem icon tại <a href="https://tabler.io/icons" target="_blank">tabler.io/icons</a>
+                </span>
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label class="field-label">Màu chữ</label>
+                    <input asp-for="Color" type="color" value="@Model.Color">
+                </div>
+                <div class="field">
+                    <label class="field-label">Màu nền</label>
+                    <input asp-for="BgColor" type="color" value="@Model.BgColor">
+                </div>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
+                <a asp-action="Index" class="btn-secondary">Hủy bỏ</a>
+                <button type="submit" class="btn-primary"><i class="ti ti-check"></i> Lưu danh mục</button>
+            </div>
+        </form>
+    </div>
+</div>

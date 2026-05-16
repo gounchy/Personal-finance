@@ -1,0 +1,303 @@
+@{
+    ViewData["Title"] = "Quản lý chi tiêu thông minh";
+    Layout = "~/Views/Shared/_LayoutPublic.cshtml";
+}
+
+<style>
+    /* ── Hero ── */
+    .hero {
+        padding: 80px 32px 60px;
+        text-align: center;
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--green-bg);
+        color: var(--green-dk);
+        border-radius: 999px;
+        padding: 5px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 24px;
+    }
+
+    .hero h1 {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--text);
+        line-height: 1.2;
+        margin-bottom: 18px;
+    }
+
+    .hero h1 span {
+        color: var(--green);
+    }
+
+    .hero p {
+        font-size: 1.1rem;
+        color: var(--text2);
+        line-height: 1.7;
+        margin-bottom: 36px;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-hero-primary {
+        background: var(--green);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 13px 28px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background .15s, transform .1s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-hero-primary:hover {
+        background: var(--green-dk);
+        transform: translateY(-1px);
+    }
+
+    .btn-hero-secondary {
+        background: transparent;
+        color: var(--text);
+        border: 1.5px solid var(--border2);
+        border-radius: 10px;
+        padding: 13px 28px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: border-color .15s, background .15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-hero-secondary:hover {
+        border-color: var(--green);
+        background: var(--green-bg);
+        color: var(--green-dk);
+    }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+        display: flex;
+        justify-content: center;
+        gap: 48px;
+        padding: 28px 32px;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        text-align: center;
+    }
+
+    .stat-item .num {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--green-dk);
+    }
+
+    .stat-item .label {
+        font-size: 13px;
+        color: var(--text3);
+        margin-top: 2px;
+    }
+
+    /* ── Features ── */
+    .features {
+        padding: 60px 32px;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .section-title {
+        text-align: center;
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 8px;
+    }
+
+    .section-sub {
+        text-align: center;
+        color: var(--text3);
+        font-size: 15px;
+        margin-bottom: 40px;
+    }
+
+    .feat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 20px;
+    }
+
+    .feat-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        transition: box-shadow .15s, transform .15s;
+    }
+
+    .feat-card:hover {
+        box-shadow: 0 8px 28px rgba(0,0,0,.08);
+        transform: translateY(-3px);
+    }
+
+    .feat-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin-bottom: 14px;
+    }
+
+    .feat-card h3 {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 6px;
+    }
+
+    .feat-card p {
+        font-size: 13px;
+        color: var(--text2);
+        line-height: 1.6;
+    }
+
+    /* ── CTA bottom ── */
+    /* .cta-section {
+        background: var(--green);
+        padding: 60px 32px;
+        text-align: center;
+    }
+
+    .cta-section h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 12px;
+    }
+
+    .cta-section p {
+        color: rgba(255,255,255,.85);
+        font-size: 15px;
+        margin-bottom: 28px;
+    }
+
+    .btn-cta {
+        background: #fff;
+        color: var(--green-dk);
+        border: none;
+        border-radius: 10px;
+        padding: 13px 32px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform .1s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-cta:hover {
+        transform: translateY(-2px);
+    } */
+</style>
+
+<!-- ── Hero Section ── -->
+<section class="hero">
+    <div class="hero-badge">
+        <i class="ti ti-sparkles"></i> Hoàn toàn miễn phí
+    </div>
+    <h1>Kiểm soát tài chính cá nhân <span>thông minh hơn</span></h1>
+    <p>
+        Theo dõi thu chi, đặt hạn mức, phân tích báo cáo — tất cả trong một nơi.<br />
+        Bắt đầu ngay hôm nay, không cần thẻ tín dụng.
+    </p>
+    <div class="hero-actions">
+        <button type="button" class="btn-hero-primary" data-auth-open="register">
+            <i class="ti ti-rocket"></i> Bắt đầu miễn phí
+        </button>
+        <button type="button" class="btn-hero-secondary" data-auth-open="login">
+            <i class="ti ti-login"></i> Đăng nhập
+        </button>
+    </div>
+</section>
+
+<!-- ── Stats strip ── -->
+<div class="stats-strip">
+    <div class="stat-item">
+        <div class="num">1,200+</div>
+        <div class="label">Người dùng</div>
+    </div>
+    <div class="stat-item">
+        <div class="num">50,000+</div>
+        <div class="label">Giao dịch được ghi nhận</div>
+    </div>
+    <div class="stat-item">
+        <div class="num">98%</div>
+        <div class="label">Hài lòng</div>
+    </div>
+    <div class="stat-item">
+        <div class="num">0đ</div>
+        <div class="label">Chi phí sử dụng</div>
+    </div>
+</div>
+
+<!-- ── Features ── -->
+<section class="features">
+    <div class="section-title">Tại sao chọn SpendWise?</div>
+    <div class="section-sub">Đầy đủ tính năng, dễ sử dụng, bảo mật cao</div>
+
+    <div class="feat-grid">
+        <div class="feat-card">
+            <div class="feat-icon" style="background:var(--green-bg);color:var(--green)">
+                <i class="ti ti-list-check"></i>
+            </div>
+            <h3>Ghi chép thu chi</h3>
+            <p>Thêm giao dịch nhanh chóng, phân loại theo danh mục, tìm kiếm và lọc linh hoạt.</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-icon" style="background:var(--amber-bg);color:var(--amber)">
+                <i class="ti ti-target"></i>
+            </div>
+            <h3>Hạn mức chi tiêu</h3>
+            <p>Đặt giới hạn cho từng danh mục, nhận cảnh báo khi sắp vượt mức để không bị "vỡ kế hoạch".</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-icon" style="background:var(--blue-bg);color:var(--blue)">
+                <i class="ti ti-chart-bar"></i>
+            </div>
+            <h3>Báo cáo trực quan</h3>
+            <p>Biểu đồ thu chi theo tháng, phân tích xu hướng, so sánh các kỳ để đưa ra quyết định tài chính tốt hơn.</p>
+        </div>
+        <div class="feat-card">
+            <div class="feat-icon" style="background:var(--purple-bg);color:var(--purple)">
+                <i class="ti ti-shield-check"></i>
+            </div>
+            <h3>Bảo mật dữ liệu</h3>
+            <p>Dữ liệu được mã hóa, xác thực OTP qua email, không chia sẻ cho bên thứ ba.</p>
+        </div>
+    </div>
+</section>

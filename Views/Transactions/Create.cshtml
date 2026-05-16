@@ -1,0 +1,80 @@
+﻿@using CNPM_Nhom12.ViewModels
+@model TransactionFormViewModel
+@{
+    ViewData["Title"] = "Thêm giao dịch";
+}
+
+<div style="max-width:560px;margin:0 auto">
+    <div class="card">
+        <div class="card-title">Thêm giao dịch mới</div>
+
+        @* Hiện TẤT CẢ lỗi validation *@
+        <div asp-validation-summary="All" class="text-danger small mb-2"></div>
+
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="field">
+                <label class="field-label">Loại giao dịch</label>
+                <div class="type-toggle">
+                    <button type="button" class="type-btn active-expense" id="btn-expense" onclick="setType('expense')">
+                        <i class="ti ti-arrow-up"></i> Chi tiêu
+                    </button>
+                    <button type="button" class="type-btn" id="btn-income" onclick="setType('income')">
+                        <i class="ti ti-arrow-down"></i> Thu nhập
+                    </button>
+                </div>
+                <input type="hidden" name="Transaction.Type" id="typeInput" value="Expense">
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label class="field-label">Số tiền (đ)</label>
+                    <input asp-for="Transaction.Amount" type="number" min="0" step="any" placeholder="Nhập số tiền...">
+                    <span asp-validation-for="Transaction.Amount" class="text-danger small"></span>
+                </div>
+                <div class="field">
+                    <label class="field-label">Ngày</label>
+                    <input type="date" name="Transaction.Date"
+                           value="@Model.Transaction.Date.ToString("yyyy-MM-dd")">
+                    <span asp-validation-for="Transaction.Date" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Danh mục</label>
+                <select asp-for="Transaction.CategoryId"
+                        asp-items="@(new SelectList(Model.Categories, "Id", "Name"))">
+                    <option value="">-- Chọn danh mục --</option>
+                </select>
+                <span asp-validation-for="Transaction.CategoryId" class="text-danger small"></span>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Mô tả</label>
+                <input asp-for="Transaction.Description" placeholder="Tên giao dịch...">
+                <span asp-validation-for="Transaction.Description" class="text-danger small"></span>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Ghi chú (tuỳ chọn)</label>
+                <input asp-for="Transaction.Note" placeholder="Thêm ghi chú...">
+            </div>
+
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
+                <a asp-action="Index" class="btn-secondary">Hủy bỏ</a>
+                <button type="submit" class="btn-primary"><i class="ti ti-check"></i> Lưu giao dịch</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const setType = (t) => {
+            document.getElementById('btn-expense').className = 'type-btn' + (t === 'expense' ? ' active-expense' : '');
+            document.getElementById('btn-income').className  = 'type-btn' + (t === 'income'  ? ' active-income'  : '');
+            document.getElementById('typeInput').value = t === 'income' ? 'Income' : 'Expense';
+        };
+    </script>
+}

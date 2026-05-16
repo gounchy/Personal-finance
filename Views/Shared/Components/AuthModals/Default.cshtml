@@ -1,0 +1,130 @@
+@model CNPM_Nhom12.ViewModels.AuthModalsViewModel
+@{
+    var returnUrl = Model.ReturnUrl;
+    var hasReturn = !string.IsNullOrEmpty(returnUrl);
+}
+
+<div id="auth-overlay" class="auth-overlay" aria-hidden="true">
+    <div class="auth-overlay__backdrop" data-auth-close></div>
+
+    <div class="auth-modal" role="dialog" aria-modal="true" aria-label="Đăng nhập hoặc đăng ký">
+        <button type="button" class="auth-modal__close" data-auth-close aria-label="Đóng">&times;</button>
+
+        <div class="auth-panels">
+            <!-- Login -->
+            <div id="login-form"
+                 class="auth-form"
+                 data-auth-panel="login"
+                 aria-hidden="true">
+                <h2 class="auth-form__title" id="login-form-title">Đăng nhập</h2>
+
+                @if (TempData["LoginError"] != null)
+                {
+                    <div class="auth-alert auth-alert--error" role="alert">@TempData["LoginError"]</div>
+                }
+
+                <form asp-controller="Account" asp-action="Login" method="post" class="auth-form__fields">
+                    @Html.AntiForgeryToken()
+                    @if (hasReturn)
+                    {
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                    }
+                    <div class="auth-field">
+                        <label class="auth-label" for="auth-login-email">Email</label>
+                        <input id="auth-login-email" name="Email" type="email" autocomplete="username" class="auth-input" required />
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label" for="auth-login-password">Mật khẩu</label>
+                        <input id="auth-login-password" name="Password" type="password" autocomplete="current-password" class="auth-input" required />
+                    </div>
+                    <label class="auth-check">
+                        <input name="RememberMe" type="checkbox" value="true" />
+                        <span>Ghi nhớ đăng nhập</span>
+                    </label>
+                    <button type="submit" class="auth-submit">Đăng nhập</button>
+                </form>
+
+                <div class="auth-form__footer">
+                    <button type="button" class="auth-link" data-auth-switch="forgot">Quên mật khẩu?</button>
+                </div>
+                <p class="auth-form__switch">
+                    Chưa có tài khoản?
+                    <button type="button" class="auth-link auth-link--strong" data-auth-switch="register">Đăng ký</button>
+                </p>
+            </div>
+
+            <!-- Register -->
+            <div id="register-form"
+                 class="auth-form"
+                 data-auth-panel="register"
+                 aria-hidden="true">
+                <h2 class="auth-form__title" id="register-form-title">Đăng ký</h2>
+
+                @if (TempData["RegisterError"] != null)
+                {
+                    <div class="auth-alert auth-alert--error" role="alert">@TempData["RegisterError"]</div>
+                }
+
+                <form asp-controller="Account" asp-action="Register" method="post" class="auth-form__fields">
+                    @Html.AntiForgeryToken()
+                    <div class="auth-field">
+                        <label class="auth-label" for="auth-reg-name">Họ và tên</label>
+                        <input id="auth-reg-name" name="FullName" type="text" autocomplete="name" class="auth-input" required />
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label" for="auth-reg-email">Email</label>
+                        <input id="auth-reg-email" name="Email" type="email" autocomplete="email" class="auth-input" required />
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label" for="auth-reg-phone">Số điện thoại</label>
+                        <input id="auth-reg-phone" name="PhoneNumber" type="tel" autocomplete="tel" class="auth-input" required />
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label" for="auth-reg-address">Địa chỉ <span class="auth-muted">(tùy chọn)</span></label>
+                        <input id="auth-reg-address" name="Address" type="text" class="auth-input" />
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label" for="auth-reg-pass">Mật khẩu</label>
+                        <input id="auth-reg-pass" name="Password" type="password" autocomplete="new-password" class="auth-input" required />
+                    </div>
+                    <div class="auth-field">
+                        <label class="auth-label" for="auth-reg-pass2">Xác nhận mật khẩu</label>
+                        <input id="auth-reg-pass2" name="ConfirmPassword" type="password" autocomplete="new-password" class="auth-input" required />
+                    </div>
+                    <button type="submit" class="auth-submit">Đăng ký và nhận OTP</button>
+                </form>
+
+                <p class="auth-form__switch">
+                    Đã có tài khoản?
+                    <button type="button" class="auth-link auth-link--strong" data-auth-switch="login">Đăng nhập</button>
+                </p>
+            </div>
+
+            <!-- Forgot -->
+            <div id="forgot-form"
+                 class="auth-form"
+                 data-auth-panel="forgot"
+                 aria-hidden="true">
+                <h2 class="auth-form__title" id="forgot-form-title">Quên mật khẩu</h2>
+
+                @if (TempData["ForgotPasswordNotice"] != null)
+                {
+                    <div class="auth-alert auth-alert--info" role="status">@TempData["ForgotPasswordNotice"]</div>
+                }
+
+                <form asp-controller="Account" asp-action="ForgotPassword" method="post" class="auth-form__fields">
+                    @Html.AntiForgeryToken()
+                    <div class="auth-field">
+                        <label class="auth-label" for="auth-forgot-email">Email</label>
+                        <input id="auth-forgot-email" name="Email" type="email" autocomplete="email" class="auth-input" required />
+                    </div>
+                    <button type="submit" class="auth-submit">Gửi mã OTP</button>
+                </form>
+
+                <div class="auth-form__footer">
+                    <button type="button" class="auth-link" data-auth-switch="login">← Quay lại đăng nhập</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

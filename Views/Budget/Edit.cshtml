@@ -1,0 +1,49 @@
+﻿@using CNPM_Nhom12.Models
+@model BudgetLimit
+@{
+    ViewData["Title"] = "Sửa hạn mức";
+    var categories = ViewBag.Categories as List<Category> ?? new();
+}
+
+<div style="max-width:480px;margin:0 auto">
+    <div class="card">
+        <div class="card-title">Chỉnh sửa hạn mức chi tiêu</div>
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+
+            <div class="field">
+                <label class="field-label">Danh mục</label>
+                <select asp-for="CategoryId"
+                        asp-items="@(new SelectList(categories, "Id", "Name", Model.CategoryId))">
+                    <option value="">-- Chọn danh mục --</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label class="field-label">Hạn mức (đ)</label>
+                <input asp-for="LimitAmount" type="number" min="0" step="50000" placeholder="Nhập số tiền..." />
+            </div>
+
+            <div class="field-row">
+                <div class="field">
+                    <label class="field-label">Tháng</label>
+                    <select asp-for="Month">
+                        @for (int m = 1; m <= 12; m++)
+                        {
+                            <option value="@m">Tháng @m</option>
+                        }
+                    </select>
+                </div>
+                <div class="field">
+                    <label class="field-label">Năm</label>
+                    <input asp-for="Year" type="number" min="2020" max="2030" />
+                </div>
+            </div>
+
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px">
+                <a asp-action="Index" class="btn-secondary">Hủy bỏ</a>
+                <button type="submit" class="btn-primary"><i class="ti ti-check"></i> Cập nhật</button>
+            </div>
+        </form>
+    </div>
+</div>

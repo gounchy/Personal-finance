@@ -1,0 +1,157 @@
+﻿@using CNPM_Nhom12.ViewModels
+@model ReportViewModel
+@{
+    ViewData["Title"] = "Báo cáo tài chính";
+    var barLabels = System.Text.Json.JsonSerializer.Serialize(Model.MonthlyData.Select(m => m.Label));
+    var barIncome = System.Text.Json.JsonSerializer.Serialize(Model.MonthlyData.Select(m => m.Income / 1000000m));
+    var barExpense = System.Text.Json.JsonSerializer.Serialize(Model.MonthlyData.Select(m => m.Expense / 1000000m));
+    var pieLabels = System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown.Select(c => c.CategoryName));
+    var pieValues = System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown.Select(c => c.Amount));
+    var pieColors = System.Text.Json.JsonSerializer.Serialize(Model.CategoryBreakdown.Select(c => c.Color));
+}
+
+<form method="get" class="filter-bar">
+    <select name="range" onchange="this.form.submit()">
+        @if (Model.RangeMonths == 3)
+        {
+            <option value="3" selected>3 tháng gần nhất</option>
+        }
+        else
+        {
+            <option value="3">3 tháng gần nhất</option>
+        }
+        @if (Model.RangeMonths == 6)
+        {
+            <option value="6" selected>6 tháng gần nhất</option>
+        }
+        else
+        {
+            <option value="6">6 tháng gần nhất</option>
+        }
+        @if (Model.RangeMonths == 12)
+        {
+            <option value="12" selected>12 tháng gần nhất</option>
+        }
+        else
+        {
+            <option value="12">12 tháng gần nhất</option>
+        }
+    </select>
+    <div style="flex:1"></div>
+    <button type="button" class="btn-secondary" onclick="window.print()">
+        <i class="ti ti-download"></i> Xuất báo cáo
+    </button>
+</form>
+
+<div class="report-grid">
+    <div class="card">
+        <div class="card-title">Thu / Chi theo tháng</div>
+        <div style="display:flex;gap:14px;margin-bottom:12px;font-size:12px;color:var(--text2)">
+            <span style="display:flex;align-items:center;gap:5px">
+                <span style="width:11px;height:11px;border-radius:3px;background:#1D9E75;display:inline-block"></span>Thu nhập
+            </span>
+            <span style="display:flex;align-items:center;gap:5px">
+                <span style="width:11px;height:11px;border-radius:3px;background:#D85A30;display:inline-block"></span>Chi tiêu
+            </span>
+        </div>
+        <div style="position:relative;width:100%;height:240px">
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-title">Tỷ lệ chi tiêu theo danh mục</div>
+        <div style="display:flex;flex-wrap:wrap;gap:9px;margin-bottom:10px;font-size:12px;color:var(--text2)">
+            @foreach (var c in Model.CategoryBreakdown)
+            {
+                <span style="display:flex;align-items:center;gap:5px">
+                    <span style="width:11px;height:11px;border-radius:3px;background:@c.Color;display:inline-block"></span>
+                    @c.CategoryName @c.Percentage.ToString("F0")%
+                </span>
+            }
+        </div>
+        <div style="position:relative;width:100%;height:240px">
+            <canvas id="pieChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-title">Tổng kết theo danh mục — Tháng @DateTime.Now.Month/@DateTime.Now.Year</div>
+    <table style="table-layout:fixed">
+        <thead>
+            <tr>
+                <th style="width:28%">Danh mục</th>
+                <th style="width:20%">Tổng chi</th>
+                <th style="width:20%">Hạn mức</th>
+                <th style="width:15%">Tỷ lệ</th>
+                <th style="width:17%">Trạng thái</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in Model.CategoryBreakdown)
+            {
+                <tr>
+                    <td><span class="cat-dot" style="background:@c.Color"></span>@c.CategoryName</td>
+                    <td class="negative" style="font-weight:600">@c.Amount.ToString("N0")đ</td>
+                    <td>@(c.LimitAmount.HasValue? c.LimitAmount.Value.ToString("N0") + "đ" : "—")</td>
+                    <td>@c.Percentage.ToString("F0")%</td>
+                    <td><span class="badge badge-@c.StatusBadge">@c.StatusLabel</span></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          try {
+            const barLabels  = @Html.Raw(barLabels);
+            const barIncome  = @Html.Raw(barIncome);
+            const barExpense = @Html.Raw(barExpense);
+            const pieLabels  = @Html.Raw(pieLabels);
+            const pieValues  = @Html.Raw(pieValues);
+            const pieColors  = @Html.Raw(pieColors);
+
+            const barCanvas = document.getElementById('barChart');
+            const pieCanvas = document.getElementById('pieChart');
+            if (!barCanvas || !pieCanvas || typeof Chart === 'undefined') return;
+
+            new Chart(barCanvas, {
+              type: 'bar',
+              data: { labels: barLabels, datasets: [
+                { label: 'Thu nhập', data: barIncome,  backgroundColor: '#1D9E75', borderRadius: 5, borderSkipped: false },
+                { label: 'Chi tiêu', data: barExpense, backgroundColor: '#D85A30', borderRadius: 5, borderSkipped: false }
+              ]},
+              options: { responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                  y: { ticks: { callback: (v) => v + 'tr', font: { size: 11 } }, grid: { color: 'rgba(0,0,0,0.06)' } },
+                  x: { ticks: { font: { size: 11 } }, grid: { display: false } }
+                }
+              }
+            });
+
+            const total = Array.isArray(pieValues) && pieValues.length
+              ? pieValues.reduce((a, b) => a + b, 0)
+              : 0;
+
+            new Chart(pieCanvas, {
+              type: 'doughnut',
+              data: { labels: pieLabels, datasets: [{ data: pieValues, backgroundColor: pieColors, borderWidth: 3, borderColor: '#fff' }] },
+              options: { responsive: true, maintainAspectRatio: false, cutout: '58%',
+                plugins: { legend: { display: false },
+                  tooltip: { callbacks: { label: (ctx) => {
+                    const raw = Number(ctx.raw) || 0;
+                    const pct = total > 0 ? ((raw / total) * 100).toFixed(1) : '0';
+                    return `${ctx.label}: ${pct}%`;
+                  } } }
+                }
+              }
+            });
+          } catch (e) {
+            console.error('Charts:', e);
+          }
+        });
+    </script>
+}
