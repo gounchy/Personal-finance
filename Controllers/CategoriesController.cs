@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CNPM_Nhom12.Controllers
 {
     [Authorize]
+
     public class CategoriesController : Controller
     {
         private readonly AppDbContext _db;
