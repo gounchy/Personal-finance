@@ -10,6 +10,7 @@
 ## ⚙️ Cài đặt và chạy
 
 ### Yêu cầu
+-.NET 8 SDK
 - Visual Studio 2022
 - SQL Server (bất kỳ phiên bản nào, kể cả SQL Server Express)
 - SQL Server Management Studio (SSMS)
