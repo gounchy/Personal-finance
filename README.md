@@ -47,4 +47,8 @@ Mở file `appsettings.json`, đảm bảo connection string trỏ đúng SQL Se
 
 Mở solution `CNPM_Nhom12.sln` bằng Visual Studio, nhấn **F5** hoặc nút **Run**.
 
+### Tài khoản test:
+- **Username:** 1923050808@dntu.edu.vn
+- **Password:** 111111
+
 ---
